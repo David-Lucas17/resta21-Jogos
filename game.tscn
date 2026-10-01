@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://d0ijm0dtcj4l0"]
+
+[ext_resource type="Script" uid="uid://45ywnmdn3cmm" path="res://main.gd" id="1_80nbo"]
+
+[node name="game" type="Node2D" unique_id=287012766]
+script = ExtResource("1_80nbo")
+
+[node name="board" type="Label" parent="." unique_id=1448016331]
+offset_left = 41.0
+offset_top = 36.0
+offset_right = 1121.0
+offset_bottom = 616.0
+theme_override_font_sizes/font_size = 32
+text = "Default"
+
+[node name="btnPull" type="Button" parent="." unique_id=2099550960]
+offset_left = 97.0
+offset_top = 434.0
+offset_right = 367.0
+offset_bottom = 570.0
+theme_override_font_sizes/font_size = 32
+text = "Puxar"
+
+[node name="btnKeep" type="Button" parent="." unique_id=1576793777]
+offset_left = 422.0
+offset_top = 441.0
+offset_right = 694.0
+offset_bottom = 576.0
+theme_override_font_sizes/font_size = 32
+text = "Manter"
+
+[node name="btnReset" type="Button" parent="." unique_id=2013345741]
+offset_left = 761.0
+offset_top = 440.0
+offset_right = 996.0
+offset_bottom = 571.0
+theme_override_font_sizes/font_size = 32
+text = "Reiniciar"
+
+[node name="resultLabel" type="Label" parent="." unique_id=711155895]
+offset_left = 124.0
+offset_top = 28.0
+offset_right = 1011.0
+offset_bottom = 420.0
+theme_override_font_sizes/font_size = 48
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="button_up" from="btnPull" to="." method="_on_btn_pull_button_up"]
+[connection signal="button_up" from="btnKeep" to="." method="_on_btn_keep_button_up"]
+[connection signal="button_up" from="btnReset" to="." method="_on_btn_reset_button_up"]
