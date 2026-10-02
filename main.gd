@@ -2,15 +2,15 @@ extends Node2D
 
 @onready var board = get_node('board')
 
-# logica
+const MACHINE_STANDS = 17
+
 var turn_player : bool = true
+var game_over : bool = false
 var playerA : Player
 var playerB : Player
 var deck
 
-func update_turn():
-	turn_player = not turn_player
-	
+func update_board():
 	if( turn_player ):
 		board.text = 'Vez do jogador ' + str(playerA.title)
 	else:
@@ -19,14 +19,47 @@ func update_turn():
 	board.text += ' | ' + str(playerB.title) + ': ' + str( playerB.score )
 	board.text += '\n'
 	board.text += playerA.show_hand() + '\n' + playerB.show_hand()
-	
-	if not turn_player:
-		playerB.take_card(deck)
-		update_turn()
+
+func check_winner():
+	if( playerA.score > 21 ):
+		$resultLabel.text = playerA.title + " passou de 21. " + playerB.title + " venceu."
+		game_over = true
+	elif( playerB.score > 21 ):
+		$resultLabel.text = playerB.title + " passou de 21. " + playerA.title + " venceu."
+		game_over = true
+	elif( playerA.score == 21 ):
+		$resultLabel.text = "Jogador " + playerA.title + " venceu."
+		game_over = true
+	elif( playerB.score == 21 ):
+		$resultLabel.text = "Jogador " + playerB.title + " venceu."
+		game_over = true
+	return game_over
+
+func machine_plays():
+	turn_player = false
+	update_board()
+
+	while( playerB.score < MACHINE_STANDS ):
+		playerB.take_card( deck )
+		update_board()
+		if check_winner():
+			return
+
+	turn_player = true
+	update_board()
+
+func compare_scores():
+	if( playerA.score > playerB.score ):
+		$resultLabel.text = playerA.title + " venceu por " + str(playerA.score) + " a " + str(playerB.score) + "."
+	elif( playerB.score > playerA.score ):
+		$resultLabel.text = playerB.title + " venceu por " + str(playerB.score) + " a " + str(playerA.score) + "."
+	else:
+		$resultLabel.text = "Empate em " + str(playerA.score) + "."
+	game_over = true
 
 func generate_deck():
 	var deck = []
-	# naipes = "houses"
+
 	var houses = ["Ouro", "Copas", "Espadas", "Paus"]
 	for house in houses:
 		for num in range(1, 14):
@@ -36,43 +69,46 @@ func generate_deck():
 func _ready():
 	playerA = Player.new("Joaw")
 	playerB = Player.new("Warya")
-	
+
 	deck = generate_deck()
 	deck.shuffle()
-	
-	for temporaria in deck:
-		# print( str( temporaria.num ) + ' de ' + temporaria.house )
-		print( temporaria.title )
 
+	update_board()
 
 func _on_btn_pull_button_up() -> void:
-	if( turn_player ):
-		playerA.take_card( deck )
-	else:
-		playerB.take_card( deck )
-	
-	if( playerA.score == 21 or playerB.score > 21 ):
-		$resultLabel.text = "Jogador " + playerA.title + " venceu."
-	elif( playerB.score == 21 or playerA.score > 21 ): # else if
-		$resultLabel.text = "Jogador " + playerB.title + " venceu."
-	update_turn()
+	if( game_over ):
+		return
+
+	playerA.take_card( deck )
+	update_board()
+
+	if check_winner():
+		return
+
+	machine_plays()
 
 func _on_btn_keep_button_up() -> void:
-	update_turn()
-	board.text += "Manteve carta"
-	
+	if( game_over ):
+		return
+
+	machine_plays()
+
+	if( game_over ):
+		return
+
+	compare_scores()
 
 func _on_btn_reset_button_up() -> void:
-	#board.text = "Reiniciar"
 	playerA.hand = []
 	playerB.hand = []
-	
+
 	playerA.score = 0
 	playerB.score = 0
 
 	deck = generate_deck()
 	deck.shuffle()
-	
+
 	turn_player = true
-	update_turn()
+	game_over = false
 	$resultLabel.text = ""
+	update_board()

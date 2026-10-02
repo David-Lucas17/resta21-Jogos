@@ -1,15 +1,14 @@
 class_name Card
 
 var num : int
-var house : String # naipe (Ouro, Espadas, Copas e Paus)
+var house : String
 
-var title : String # Eg. "5 de ouros"
-var score : int # pontuacao
+var title : String
+var score : int
 
-# Construtor
 func _init(num, house):
 	self.num = num
-	self.house = house 
+	self.house = house
 
 	if( num == 1 ):
 		self.score = 11
